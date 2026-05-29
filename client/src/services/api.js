@@ -3,10 +3,10 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL:
-    "https://smart-grocery-inventory-manager.onrender.com",
+    "https://smart-grocery-inventory-manager.onrender.com/api",
 });
 
-// Send token automatically
+// Auto send token
 API.interceptors.request.use(
   (req) => {
     const token =
@@ -24,3 +24,4 @@ API.interceptors.request.use(
 );
 
 export default API;
+
