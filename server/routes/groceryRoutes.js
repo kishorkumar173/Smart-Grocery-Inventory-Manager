@@ -1,4 +1,9 @@
-const express = require("express");
+
+const express =
+  require("express");
+
+const router =
+  express.Router();
 
 const {
   addGroceryItem,
@@ -7,31 +12,53 @@ const {
   updateGroceryItem,
   getLowStockItems,
   getExpiryItems,
-} = require("../controllers/groceryController");
+} = require(
+  "../controllers/groceryController"
+);
 
-const router = express.Router();
+// Import auth middleware
+const authMiddleware =
+  require(
+    "../middleware/authMiddleware"
+  );
 
-// Add item
-router.post("/add", addGroceryItem);
+// Protected Routes
+router.post(
+  "/add",
+  authMiddleware,
+  addGroceryItem
+);
 
-// Get items
-router.get("/all", getGroceryItems);
+router.get(
+  "/all",
+  authMiddleware,
+  getGroceryItems
+);
 
-// Delete item
 router.delete(
   "/delete/:id",
+  authMiddleware,
   deleteGroceryItem
 );
+
 router.put(
   "/update/:id",
+  authMiddleware,
   updateGroceryItem
 );
+
 router.get(
   "/low-stock",
+  authMiddleware,
   getLowStockItems
 );
+
 router.get(
   "/expiry-alerts",
+  authMiddleware,
   getExpiryItems
 );
-module.exports = router;
+
+module.exports =
+  router;
+
