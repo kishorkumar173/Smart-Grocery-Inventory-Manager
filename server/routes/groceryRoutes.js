@@ -16,12 +16,11 @@ const {
   "../controllers/groceryController"
 );
 
-// Import auth middleware
-const authMiddleware =
-  require(
-    "../middleware/authMiddleware"
-  );
-
+const {
+  authMiddleware,
+} = require(
+  "../middleware/authMiddleware"
+);
 // Protected Routes
 router.post(
   "/add",
