@@ -1,70 +1,87 @@
+
 const GroceryItem = require(
   "../models/GroceryItem"
 );
 
 // Add Grocery Item
-exports.addGroceryItem = async (
-  req,
-  res
-) => {
-  try {
-    const {
-      name,
-      quantity,
-      unit,
-      category,
-      expiryDate,
-      minimumStock,
-    } = req.body;
-
-    const groceryItem =
-      await GroceryItem.create({
+exports.addGroceryItem =
+  async (req, res) => {
+    try {
+      const {
         name,
         quantity,
         unit,
         category,
         expiryDate,
         minimumStock,
-      });
+      } = req.body;
 
-    res.status(201).json({
-      message:
-        "Grocery Item Added Successfully",
-      groceryItem,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+      const groceryItem =
+        await GroceryItem.create({
+          name,
+          quantity,
+          unit,
+          category,
+          expiryDate,
+          minimumStock,
+          userId:
+            req.user.id,
+        });
+
+      res.status(201).json({
+        message:
+          "Grocery Item Added Successfully",
+        groceryItem,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message:
+          error.message,
+      });
+    }
+  };
 
 // Get All Grocery Items
 exports.getGroceryItems =
   async (req, res) => {
     try {
       const items =
-        await GroceryItem.find();
+        await GroceryItem.find(
+          {
+            userId:
+              req.user.id,
+          }
+        );
 
-      res.status(200).json(items);
+      res.status(200).json(
+        items
+      );
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message:
+          error.message,
       });
     }
   };
-  // Delete Grocery Item
+
+// Delete Grocery Item
 exports.deleteGroceryItem =
   async (req, res) => {
     try {
       const item =
-        await GroceryItem.findByIdAndDelete(
-          req.params.id
+        await GroceryItem.findOneAndDelete(
+          {
+            _id:
+              req.params.id,
+            userId:
+              req.user.id,
+          }
         );
 
       if (!item) {
         return res.status(404).json({
-          message: "Item not found",
+          message:
+            "Item not found",
         });
       }
 
@@ -74,26 +91,36 @@ exports.deleteGroceryItem =
       });
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message:
+          error.message,
       });
     }
   };
-  // Update Grocery Item
+
+// Update Grocery Item
 exports.updateGroceryItem =
   async (req, res) => {
     try {
       const updatedItem =
-        await GroceryItem.findByIdAndUpdate(
-          req.params.id,
+        await GroceryItem.findOneAndUpdate(
+          {
+            _id:
+              req.params.id,
+            userId:
+              req.user.id,
+          },
           req.body,
           {
             new: true,
           }
         );
 
-      if (!updatedItem) {
+      if (
+        !updatedItem
+      ) {
         return res.status(404).json({
-          message: "Item not found",
+          message:
+            "Item not found",
         });
       }
 
@@ -104,16 +131,23 @@ exports.updateGroceryItem =
       });
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message:
+          error.message,
       });
     }
   };
-  // Get Low Stock Items
+
+// Get Low Stock Items
 exports.getLowStockItems =
   async (req, res) => {
     try {
       const items =
-        await GroceryItem.find();
+        await GroceryItem.find(
+          {
+            userId:
+              req.user.id,
+          }
+        );
 
       const lowStockItems =
         items.filter(
@@ -127,16 +161,23 @@ exports.getLowStockItems =
       );
     } catch (error) {
       res.status(500).json({
-        message: error.message,
+        message:
+          error.message,
       });
     }
   };
-  // Expiry Alerts
+
+// Expiry Alerts
 exports.getExpiryItems =
   async (req, res) => {
     try {
       const items =
-        await GroceryItem.find();
+        await GroceryItem.find(
+          {
+            userId:
+              req.user.id,
+          }
+        );
 
       const today =
         new Date();
@@ -149,19 +190,21 @@ exports.getExpiryItems =
       );
 
       const expiryItems =
-        items.filter((item) => {
-          const expiryDate =
-            new Date(
-              item.expiryDate
-            );
+        items.filter(
+          (item) => {
+            const expiryDate =
+              new Date(
+                item.expiryDate
+              );
 
-          return (
-            expiryDate >=
-              today &&
-            expiryDate <=
-              next7Days
-          );
-        });
+            return (
+              expiryDate >=
+                today &&
+              expiryDate <=
+                next7Days
+            );
+          }
+        );
 
       res.status(200).json(
         expiryItems
@@ -173,3 +216,4 @@ exports.getExpiryItems =
       });
     }
   };
+

@@ -35,6 +35,12 @@ const groceryItemSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    userId: {
+  type:
+    mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  required: true,
+},
   },
   {
     timestamps: true,
